@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABC</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --surface: #1e1e2e;
+    --surface2: #252535;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #606078;
+    --accent: #7c6af7;
+    --accent2: #a08cf8;
+    --accent3: #c4b8ff;
+    --green: #4ade80;
+    --blue: #60a5fa;
+    --orange: #fb923c;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --glow: rgba(124, 106, 247, 0.15);
+  }
+  [data-theme="light"] {
+    --bg: #f0f0f5;
+    --bg2: #e8e8f0;
+    --bg3: #dcdce8;
+    --surface: #ffffff;
+    --surface2: #f5f5fb;
+    --border: rgba(0,0,0,0.07);
+    --border2: rgba(0,0,0,0.12);
+    --text: #1a1a2e;
+    --text2: #4a4a6a;
+    --text3: #8080a0;
+    --accent: #5b4de0;
+    --accent2: #7c6af7;
+    --accent3: #4030c0;
+    --glow: rgba(91, 77, 224, 0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.4s ease, color 0.4s ease;
+    overflow-x: hidden;
+  }
+
+  /* ======= SCROLLBAR ======= */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+  /* ======= NAV ======= */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 64px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    transition: all 0.3s;
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 18px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; color: var(--text2);
+    text-decoration: none; letter-spacing: 0.5px;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px; background: var(--accent);
+    transition: width 0.25s ease;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a:hover::after { width: 100%; }
+  .theme-toggle {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 40px; cursor: pointer;
+    width: 52px; height: 28px;
+    position: relative; transition: background 0.3s;
+    overflow: hidden;
+  }
+  .toggle-track {
+    position: absolute; inset: 0;
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 0 6px;
+  }
+  .sun-icon, .moon-icon {
+    width: 14px; height: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* Sun CSS */
+  .sun-shape {
+    width: 10px; height: 10px;
+    background: var(--yellow);
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 0 2px var(--yellow);
+  }
+  .sun-shape::before, .sun-shape::after {
+    content: '';
+    position: absolute;
+    background: var(--yellow);
+  }
+  /* Moon CSS */
+  .moon-shape {
+    width: 9px; height: 9px;
+    background: transparent;
+    border-radius: 50%;
+    box-shadow: 3px -2px 0 0 var(--text3);
+    transform: rotate(-30deg);
+  }
+  .toggle-knob {
+    position: absolute; top: 3px;
+    width: 22px; height: 22px;
+    background: var(--accent);
+    border-radius: 50%;
+    transition: left 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    left: 3px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  [data-theme="light"] .toggle-knob { left: 27px; }
+
+  /* ======= HERO ======= */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 64px 48px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 40%, var(--glow), transparent),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(96,165,250,0.05), transparent);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 0; opacity: 0.04;
+    background-image:
+      linear-gradient(var(--text) 1px, transparent 1px),
+      linear-gradient(90deg, var(--text) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .hero-content {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center;
+    max-width: 1100px; margin: 0 auto; width: 100%;
+  }
+  .hero-label {
+    font-size: 11px; letter-spacing: 3px; color: var(--accent);
+    text-transform: uppercase; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .hero-label::before {
+    content: ''; width: 24px; height: 1px; background: var(--accent);
+  }
+  .hero-name {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(42px, 5vw, 64px);
+    font-weight: 800; line-height: 1.05;
+    letter-spacing: -2px; color: var(--text);
+    margin-bottom: 8px;
+  }
+  .hero-name .italic { font-family: 'Instrument Serif', serif; font-style: italic; color: var(--accent2); font-weight: 400; }
+  .hero-role {
+    font-size: 13px; color: var(--text2);
+    margin-bottom: 32px; letter-spacing: 1px;
+  }
+  .hero-desc {
+    font-size: 14px; line-height: 1.8; color: var(--text2);
+    max-width: 440px; margin-bottom: 40px;
+  }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: #fff;
+    padding: 12px 28px; border: none; border-radius: 6px;
+    font-family: 'DM Mono', monospace; font-size: 12px;
+    letter-spacing: 1px; cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 24px var(--glow); }
+  .btn-outline {
+    background: transparent; color: var(--text);
+    padding: 12px 28px; border: 1px solid var(--border2);
+    border-radius: 6px; font-family: 'DM Mono', monospace;
+    font-size: 12px; letter-spacing: 1px; cursor: pointer;
+    transition: all 0.2s; text-decoration: none; display: inline-block;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+  .hero-photo-wrap {
+    display: flex; justify-content: center; align-items: center;
+    position: relative; z-index: 1;
+  }
+  .hero-text {
+    position: relative; z-index: 2;
+  }
+  .hero-photo-frame {
+    position: relative; width: 300px; height: 300px;
+  }
+  .hero-photo-frame::before {
+    content: ''; position: absolute;
+    inset: -2px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), transparent, var(--blue));
+    z-index: 0;
+  }
+  .hero-photo-frame::after {
+    content: ''; position: absolute;
+    inset: -16px; border-radius: 50%;
+    border: 1px solid var(--border);
+    z-index: -1; animation: rotate 12s linear infinite;
+  }
+  @keyframes rotate { to { transform: rotate(360deg); } }
+  .hero-photo {
+    position: relative; z-index: 1;
+    width: 296px; height: 296px;
+    border-radius: 50%; object-fit: cover;
+    margin: 2px;
+    filter: grayscale(10%);
+  }
+  .hero-stat-badge {
+    position: absolute; background: var(--surface);
+    border: 1px solid var(--border2); border-radius: 8px;
+    padding: 10px 16px; font-size: 11px;
+    backdrop-filter: blur(8px);
+    z-index: 2;
+  }
+  .hero-stat-badge.badge-1 { top: 10px; right: -40px; }
+  .hero-stat-badge.badge-2 { bottom: 40px; left: -40px; }
+  .badge-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--accent); display: block; }
+  .badge-lbl { color: var(--text2); font-size: 10px; letter-spacing: 0.5px; }
+  .scroll-cue {
+    position: absolute; bottom: 32px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px; color: var(--text3); letter-spacing: 2px;
+    text-transform: uppercase; display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+  }
+  .scroll-line {
+    width: 1px; height: 40px; background: linear-gradient(to bottom, var(--text3), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+  /* ======= SECTIONS ======= */
+  section { padding: 100px 48px; max-width: 1200px; margin: 0 auto; }
+  .section-header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 64px;
+  }
+  .section-num {
+    font-size: 11px; color: var(--accent); letter-spacing: 2px;
+  }
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 700; color: var(--text);
+    letter-spacing: -1px;
+  }
+
+  /* ======= ABOUT ======= */
+  #about { padding-top: 120px; }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 64px; align-items: start;
+  }
+  .about-text p {
+    font-size: 14px; line-height: 1.9; color: var(--text2);
+    margin-bottom: 20px;
+  }
+  .about-text p strong { color: var(--text); font-weight: 500; }
+  .about-details { display: flex; flex-direction: column; gap: 12px; margin-top: 32px; }
+  .about-row {
+    display: flex; gap: 12px; align-items: baseline;
+    font-size: 13px; padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .about-row-key { color: var(--text3); width: 80px; flex-shrink: 0; font-size: 11px; letter-spacing: 0.5px; }
+  .about-row-val { color: var(--text); }
+  .contact-cards { display: flex; flex-direction: column; gap: 12px; }
+  .contact-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px 24px;
+    display: flex; align-items: center; gap: 16px;
+    text-decoration: none; color: var(--text);
+    transition: all 0.2s;
+  }
+  .contact-card:hover { border-color: var(--accent); transform: translateX(4px); }
+  .contact-icon {
+    width: 40px; height: 40px; border-radius: 8px;
+    background: var(--bg3); display: flex;
+    align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .contact-info span { display: block; font-size: 10px; color: var(--text3); letter-spacing: 1px; margin-bottom: 3px; }
+  .contact-info strong { font-size: 14px; color: var(--text); font-weight: 500; }
+
+  /* ======= LANGUAGES ======= */
+  .lang-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .lang-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 24px;
+    transition: all 0.25s; cursor: default;
+    position: relative; overflow: hidden;
+  }
+  .lang-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--glow), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .lang-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+  .lang-card:hover::before { opacity: 1; }
+  .lang-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .lang-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; color: var(--text); }
+  .lang-year { font-size: 10px; color: var(--accent); letter-spacing: 1px; }
+  .lang-creator { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
+  .lang-desc { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 14px; }
+  .lang-bar-bg {
+    height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden;
+  }
+  .lang-bar { height: 100%; border-radius: 2px; transition: width 1.2s cubic-bezier(0.25,1,0.5,1); }
+  .lang-level { font-size: 10px; color: var(--text3); margin-top: 6px; text-align: right; }
+  .lang-tag {
+    display: inline-block; font-size: 9px; letter-spacing: 1px;
+    padding: 3px 8px; border-radius: 4px;
+    background: var(--bg3); color: var(--text3);
+    border: 1px solid var(--border); margin-bottom: 8px;
+  }
+
+  /* ======= PROJECTS ======= */
+  .projects-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .project-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px;
+    transition: all 0.25s;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .project-card:hover { border-color: var(--accent2); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.2); }
+  .project-tag {
+    font-size: 9px; letter-spacing: 2px; color: var(--accent);
+    text-transform: uppercase; padding: 4px 10px;
+    border: 1px solid var(--accent); border-radius: 4px;
+    display: inline-block; width: fit-content;
+  }
+  .project-name {
+    font-family: 'Syne', sans-serif; font-size: 20px;
+    font-weight: 700; color: var(--text); letter-spacing: -0.5px;
+  }
+  .project-desc { font-size: 13px; color: var(--text2); line-height: 1.7; }
+  .project-stack { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .stack-tag {
+    font-size: 10px; padding: 3px 10px; border-radius: 4px;
+    background: var(--bg3); color: var(--text2);
+    border: 1px solid var(--border);
+  }
+
+  /* ======= INTERACTIVE SECTION ======= */
+  .interactive-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 32px; align-items: start;
+  }
+
+  /* ======= CALCULATOR ======= */
+  .calc-wrapper {
+    display: flex; justify-content: center;
+  }
+  .calculator {
+    width: 320px;
+    background: #1c1c1e;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  [data-theme="light"] .calculator { background: #f2f2f7; box-shadow: 0 32px 80px rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.08); }
+  .calc-display {
+    padding: 24px 28px 16px;
+    text-align: right;
+    min-height: 120px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    gap: 4px;
+  }
+  .calc-expr {
+    font-size: 16px; color: rgba(255,255,255,0.4);
+    font-weight: 300; min-height: 24px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    word-break: break-all;
+  }
+  [data-theme="light"] .calc-expr { color: rgba(0,0,0,0.35); }
+  .calc-result {
+    font-size: 64px; font-weight: 200; color: #fff;
+    letter-spacing: -3px; line-height: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    transition: font-size 0.1s;
+  }
+  [data-theme="light"] .calc-result { color: #1c1c1e; }
+  .calc-buttons {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; padding: 12px 16px 24px;
+  }
+  .calc-btn {
+    height: 72px; border: none; border-radius: 50%; cursor: pointer;
+    font-size: 28px; font-weight: 400;
+    display: flex; align-items: center; justify-content: center;
+    transition: filter 0.1s, transform 0.08s;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .calc-btn:active { filter: brightness(1.3); transform: scale(0.94); }
+  .calc-btn.op { background: #ff9f0a; color: #fff; font-size: 32px; }
+  .calc-btn.top { background: #3a3a3c; color: #fff; font-size: 20px; font-weight: 500; }
+  .calc-btn.num { background: #2c2c2e; color: #fff; }
+  .calc-btn.zero { border-radius: 36px; grid-column: span 2; justify-content: flex-start; padding-left: 28px; }
+  .calc-btn.eq { background: #ff9f0a; color: #fff; font-size: 32px; }
+  [data-theme="light"] .calc-btn.top { background: #a1a1a6; color: #fff; }
+  [data-theme="light"] .calc-btn.num { background: #d4d4d8; color: #1c1c1e; }
+  .calc-btn.op.active { background: #fff; color: #ff9f0a; }
+
+  /* ======= CHESS ======= */
+  .chess-wrapper { display: flex; flex-direction: column; gap: 16px; }
+  .chess-info {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 18px;
+    font-size: 12px; color: var(--text2);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .chess-status { font-size: 13px; color: var(--text); font-weight: 500; }
+  .chess-btn-row { display: flex; gap: 10px; }
+  .chess-ctrl {
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text2); border-radius: 6px;
+    padding: 6px 14px; font-family: 'DM Mono', monospace;
+    font-size: 11px; cursor: pointer; transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .chess-ctrl:hover { border-color: var(--accent); color: var(--accent); }
+  .chess-board-wrap { position: relative; }
+  #chessBoard {
+    display: grid; grid-template-columns: repeat(8, 1fr);
+    border-radius: 10px; overflow: hidden;
+    border: 2px solid var(--border2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    width: 100%; aspect-ratio: 1;
+  }
+  .chess-sq {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    font-size: clamp(20px, 3.5vw, 36px);
+    cursor: pointer; position: relative; transition: background 0.15s;
+    user-select: none; line-height: 1;
+  }
+  .chess-sq.light { background: #f0d9b5; }
+  .chess-sq.dark  { background: #b58863; }
+  [data-theme="dark"] .chess-sq.light { background: #e8cfb1; }
+  [data-theme="dark"] .chess-sq.dark  { background: #a07850; }
+  .chess-sq.selected { background: rgba(106, 168, 79, 0.7) !important; }
+  .chess-sq.valid-move::after {
+    content: ''; position: absolute;
+    width: 34%; height: 34%;
+    background: rgba(0,0,0,0.22); border-radius: 50%;
+  }
+  .chess-sq.valid-capture::after {
+    content: ''; position: absolute; inset: 0;
+    border-radius: 0;
+    box-shadow: inset 0 0 0 3px rgba(0,0,0,0.22);
+  }
+  .chess-sq.in-check { background: rgba(220, 50, 50, 0.55) !important; }
+  .chess-sq.last-move { background: rgba(106, 168, 79, 0.35) !important; }
+  .sq-label {
+    position: absolute; font-size: 9px; font-weight: 700;
+    font-family: 'DM Mono', monospace; opacity: 0.5;
+    z-index: 3;
+  }
+  .sq-label.file { bottom: 1px; right: 3px; }
+  .sq-label.rank { top: 1px; left: 3px; }
+  .chess-sq.light .sq-label { color: #b58863; }
+  .chess-sq.dark  .sq-label { color: #f0d9b5; }
+
+  /* ======= MUSIC PLAYER (FLOATING) ======= */
+  .music-player {
+    position: fixed; bottom: 32px; right: 32px; z-index: 200;
+    width: 320px;
+    background: rgba(20,20,30,0.9);
+    backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    transform: translateY(0);
+  }
+  [data-theme="light"] .music-player {
+    background: rgba(255,255,255,0.88);
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+  .music-player.collapsed { transform: translateY(calc(100% - 72px)); }
+  .music-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px; cursor: pointer;
+  }
+  .music-art {
+    width: 48px; height: 48px; border-radius: 8px;
+    object-fit: cover; flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .music-art.spinning { animation: spinRecord 4s linear infinite; }
+  @keyframes spinRecord { to { transform: rotate(360deg); } }
+  .music-meta { flex: 1; min-width: 0; }
+  .music-title {
+    font-family: 'Syne', sans-serif; font-weight: 600;
+    font-size: 13px; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    letter-spacing: -0.3px;
+  }
+  .music-artist { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .music-collapse-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text3); font-size: 18px;
+    transition: transform 0.3s; width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .music-collapse-btn:hover { color: var(--text); background: var(--surface2); }
+  .collapsed .music-collapse-btn { transform: rotate(180deg); }
+  .music-progress-wrap {
+    margin-bottom: 12px;
+  }
+  .music-progress-bar {
+    width: 100%; height: 3px;
+    background: rgba(255,255,255,0.1); border-radius: 2px;
+    cursor: pointer; position: relative; overflow: hidden;
+    margin-bottom: 6px;
+  }
+  [data-theme="light"] .music-progress-bar { background: rgba(0,0,0,0.1); }
+  .music-progress-fill {
+    height: 100%; background: var(--accent);
+    border-radius: 2px; transition: width 0.5s linear;
+    width: 0%;
+  }
+  .music-time {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--text3); letter-spacing: 0.5px;
+  }
+  .music-controls {
+    display: flex; align-items: center; justify-content: center;
+    gap: 20px;
+  }
+  .mc-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text2); transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; padding: 6px;
+  }
+  .mc-btn:hover { color: var(--text); background: var(--surface2); }
+  .mc-play {
+    width: 44px; height: 44px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
+    box-shadow: 0 4px 16px var(--glow);
+  }
+  .mc-play:hover { transform: scale(1.08); background: var(--accent2); }
+  .mc-vol {
+    display: flex; align-items: center; gap: 6px; margin-top: 10px;
+  }
+  .vol-slider {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 3px; background: rgba(255,255,255,0.1);
+    border-radius: 2px; cursor: pointer;
+    outline: none;
+  }
+  [data-theme="light"] .vol-slider { background: rgba(0,0,0,0.1); }
+  .vol-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 12px; height: 12px;
+    border-radius: 50%; background: var(--accent); cursor: pointer;
+  }
+  .vol-icon { color: var(--text3); flex-shrink: 0; }
+
+  /* ======= FOOTER ======= */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--text3);
+  }
+  footer strong { color: var(--text2); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--text3); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--accent); }
+
+  /* ======= ANIMATIONS ======= */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ======= SVG ICONS ======= */
+  .icon { display: inline-flex; align-items: center; justify-content: center; }
+
+  /* ======= RESPONSIVE ======= */
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 80px 24px 0; }
+    .hero-content { grid-template-columns: 1fr; gap: 48px; }
+    .hero-photo-wrap { order: -1; }
+    .hero-photo-frame { width: 220px; height: 220px; }
+    .hero-photo { width: 216px; height: 216px; }
+    .hero-stat-badge.badge-1 { right: -20px; }
+    .hero-stat-badge.badge-2 { left: -20px; }
+    section { padding: 60px 24px; }
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .interactive-grid { grid-template-columns: 1fr; gap: 32px; }
+    .music-player { width: calc(100vw - 48px); right: 24px; bottom: 24px; }
+    footer { flex-direction: column; gap: 16px; padding: 32px 24px; }
+  }
+  @media (max-width: 600px) {
+    .lang-grid { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">DAP<span>.</span></div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#languages">Languages</a>
+    <a href="#projects">Projects</a>
+    <a href="#playground">Playground</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <div class="toggle-track">
+      <div class="sun-icon"><div class="sun-shape"></div></div>
+      <div class="moon-icon"><div class="moon-shape"></div></div>
+    </div>
+    <div class="toggle-knob"></div>
+  </button>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-text fade-in">
+      <div class="hero-label">Backend Developer</div>
+      <h1 class="hero-name">
+        Daffa<br>
+        <span class="italic">Aditya</span><br>
+        Pratama
+      </h1>
+      <p class="hero-role">18 y/o &mdash; Building things that run behind the scenes</p>
+      <p class="hero-desc">
+        Passionate backend developer with a deep interest in systems architecture, game development, and automation.
+        Fluent in 15+ programming languages, spanning from low-level systems to high-level scripting environments.
+      </p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary">View Projects</a>
+        <a href="#contact" class="btn-outline">Get in Touch</a>
+      </div>
+    </div>
+    <div class="hero-photo-wrap fade-in" style="transition-delay:0.2s">
+      <div class="hero-photo-frame">
+        <img src="https://i.ibb.co/zWRR7ywj/eleanor-1778524096241.jpg" alt="Daffa Aditya Pratama" class="hero-photo" onerror="this.style.background='var(--bg3)'">
+        <div class="hero-stat-badge badge-1">
+          <span class="badge-num">15+</span>
+          <span class="badge-lbl">Languages</span>
+        </div>
+        <div class="hero-stat-badge badge-2">
+          <span class="badge-num">18</span>
+          <span class="badge-lbl">Years Old</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header fade-in">
+    <span class="section-num">01</span>
+    <div class="section-line"></div>
+    <h2 class="section-title">About</h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text fade-in">
+      <p>
+        Hi, I am <strong>Daffa Aditya Pratama</strong>, an 18-year-old backend developer who started coding at a young age out of pure curiosity.
+        What began as tinkering with simple scripts grew into a full-blown passion for systems, automation, and building functional software.
+      </p>
+      <p>
+        My work spans from <strong>WhatsApp bots powered by Node.js</strong> to game engines using Godot, REST API architectures, and data-driven systems.
+        I thrive at the intersection of <strong>logic and creativity</strong>, especially when building things that others interact with daily without noticing the backend.
+      </p>
+      <p>
+        When I am not writing code, I dive into <strong>adventure fantasy</strong>, whether in books, anime, or games. That genre heavily influences
+        the RPG systems and narrative game mechanics I build into my projects.
+      </p>
+      <div class="about-details">
+        <div class="about-row"><span class="about-row-key">Name</span><span class="about-row-val">Daffa Aditya Pratama</span></div>
+        <div class="about-row"><span class="about-row-key">Age</span><span class="about-row-val">18 Years</span></div>
+        <div class="about-row"><span class="about-row-key">Role</span><span class="about-row-val">Backend Developer</span></div>
+        <div class="about-row"><span class="about-row-key">Focus</span><span class="about-row-val">Node.js, Game Dev, Bot Systems</span></div>
+        <div class="about-row"><span class="about-row-key">Languages</span><span class="about-row-val">15+ Learned</span></div>
+      </div>
+    </div>
+    <div class="contact-cards fade-in" id="contact" style="transition-delay:0.15s">
+      <a href="https://wa.me/6285801135297" target="_blank" class="contact-card">
+        <div class="contact-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#25D366"/>
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.555 4.122 1.526 5.862L0 24l6.326-1.496A11.956 11.956 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.015-1.376l-.36-.213-3.732.882.936-3.618-.234-.371A9.818 9.818 0 1112 21.818z" fill="#25D366"/>
+          </svg>
+        </div>
+        <div class="contact-info">
+          <span>WhatsApp</span>
+          <strong>+62 858-0113-5297</strong>
+        </div>
+      </a>
+      <a href="https://instagram.com/nvmd4p" target="_blank" class="contact-card">
+        <div class="contact-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <defs>
+              <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#f09433"/>
+                <stop offset="25%" stop-color="#e6683c"/>
+                <stop offset="50%" stop-color="#dc2743"/>
+                <stop offset="75%" stop-color="#cc2366"/>
+                <stop offset="100%" stop-color="#bc1888"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="url(#ig-grad)" stroke-width="2" fill="none"/>
+            <circle cx="12" cy="12" r="4" stroke="url(#ig-grad)" stroke-width="2" fill="none"/>
+            <circle cx="17.5" cy="6.5" r="1.2" fill="url(#ig-grad)"/>
+          </svg>
+        </div>
+        <div class="contact-info">
+          <span>Instagram</span>
+          <strong>@nvmd4p</strong>
+        </div>
+      </a>
+      <a href="mailto:daffaaditya.prtma@gmail.com" class="contact-card">
+        <div class="contact-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="5" width="18" height="14" rx="3" stroke="var(--accent)" stroke-width="1.5" fill="none"/>
+            <path d="M3 8l9 6 9-6" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="contact-info">
+          <span>Email</span>
+          <strong>daffaaditya.prtma@gmail.om</strong>
+        </div>
+      </a>
+      <a href="https://github.com/dpaaws" target="_blank" class="contact-card">
+        <div class="contact-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z" fill="var(--text2)"/>
+          </svg>
+        </div>
+        <div class="contact-info">
+          <span>GitHub</span>
+          <strong>@dpaaws</strong>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- LANGUAGES -->
+<section id="languages" style="padding-top:0">
+  <div class="section-header fade-in">
+    <span class="section-num">02</span>
+    <div class="section-line"></div>
+    <h2 class="section-title">Languages Learned</h2>
+  </div>
+  <div class="lang-grid" id="langGrid"></div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header fade-in">
+    <span class="section-num">03</span>
+    <div class="section-line"></div>
+    <h2 class="section-title">Projects</h2>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card fade-in">
+      <span class="project-tag">WhatsApp Bot</span>
+      <div class="project-name">RPG Bot System</div>
+      <div class="project-desc">Full-featured MMORPG bot for WhatsApp built with Node.js and Baileys. Features turn-based combat, guilds, mining, gacha, dungeon crawling, and 25-tiered exploration zones.</div>
+      <div class="project-stack">
+        <span class="stack-tag">Node.js</span><span class="stack-tag">Baileys</span><span class="stack-tag">JavaScript</span><span class="stack-tag">JSON DB</span>
+      </div>
+    </div>
+    <div class="project-card fade-in" style="transition-delay:0.1s">
+      <span class="project-tag">SMM Panel</span>
+      <div class="project-name">IndoSMM Bot</div>
+      <div class="project-desc">WhatsApp SMM panel bot integrated with IndoSMM API. Tiered tax/topup system, admin approval workflows, IDR currency conversion, and real-time order tracking.</div>
+      <div class="project-stack">
+        <span class="stack-tag">Node.js</span><span class="stack-tag">REST API</span><span class="stack-tag">IDR</span><span class="stack-tag">WhatsApp</span>
+      </div>
+    </div>
+    <div class="project-card fade-in" style="transition-delay:0.2s">
+      <span class="project-tag">Game Dev</span>
+      <div class="project-name">Guild Town Hall</div>
+      <div class="project-desc">Complex guild management game system with building upgrades, area markets, raid mechanics, and potion systems. Fully integrated into the RPG bot ecosystem.</div>
+      <div class="project-stack">
+        <span class="stack-tag">JavaScript</span><span class="stack-tag">Game Logic</span><span class="stack-tag">File DB</span>
+      </div>
+    </div>
+    <div class="project-card fade-in" style="transition-delay:0.3s">
+      <span class="project-tag">Godot</span>
+      <div class="project-name">Adventure Game</div>
+      <div class="project-desc">2D adventure-fantasy game built with Godot Engine using GDScript. Inspired by the adventure fantasy genre with procedural dungeon elements and combat systems.</div>
+      <div class="project-stack">
+        <span class="stack-tag">Godot</span><span class="stack-tag">GDScript</span><span class="stack-tag">2D</span><span class="stack-tag">Procedural</span>
+      </div>
+    </div>
+    <div class="project-card fade-in" style="transition-delay:0.4s">
+      <span class="project-tag">Mini Games</span>
+      <div class="project-name">GamePoint Suite</div>
+      <div class="project-desc">Suite of 6+ mini games inside WhatsApp: Slot Machine, Blackjack, PvP Duel, Hangman (Tebak Kata), Wordle, and Coin Flip. All tied to a unified GP leaderboard.</div>
+      <div class="project-stack">
+        <span class="stack-tag">Node.js</span><span class="stack-tag">GP System</span><span class="stack-tag">Leaderboard</span>
+      </div>
+    </div>
+    <div class="project-card fade-in" style="transition-delay:0.5s">
+      <span class="project-tag">Bot Automation</span>
+      <div class="project-name">Quiz Engine</div>
+      <div class="project-desc">~102 trivia questions across geography, science, math, Indonesian history and culture, tech, and sports. Fully automated with reward distribution and session handling.</div>
+      <div class="project-stack">
+        <span class="stack-tag">JavaScript</span><span class="stack-tag">JSON</span><span class="stack-tag">Indonesian</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLAYGROUND -->
+<section id="playground">
+  <div class="section-header fade-in">
+    <span class="section-num">04</span>
+    <div class="section-line"></div>
+    <h2 class="section-title">Playground</h2>
+  </div>
+  <div class="interactive-grid">
+    <!-- CALCULATOR -->
+    <div class="fade-in">
+      <p style="font-size:12px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px">Calculator</p>
+      <div class="calc-wrapper">
+        <div class="calculator" id="calc">
+          <div class="calc-display">
+            <div class="calc-expr" id="calcExpr"></div>
+            <div class="calc-result" id="calcResult">0</div>
+          </div>
+          <div class="calc-buttons">
+            <button class="calc-btn top" onclick="calcAC()">AC</button>
+            <button class="calc-btn top" onclick="calcToggleSign()">+/-</button>
+            <button class="calc-btn top" onclick="calcPercent()">%</button>
+            <button class="calc-btn op" id="opDiv" onclick="calcOp('/')">&#247;</button>
+
+            <button class="calc-btn num" onclick="calcNum('7')">7</button>
+            <button class="calc-btn num" onclick="calcNum('8')">8</button>
+            <button class="calc-btn num" onclick="calcNum('9')">9</button>
+            <button class="calc-btn op" id="opMul" onclick="calcOp('*')">&#215;</button>
+
+            <button class="calc-btn num" onclick="calcNum('4')">4</button>
+            <button class="calc-btn num" onclick="calcNum('5')">5</button>
+            <button class="calc-btn num" onclick="calcNum('6')">6</button>
+            <button class="calc-btn op" id="opSub" onclick="calcOp('-')">&#8722;</button>
+
+            <button class="calc-btn num" onclick="calcNum('1')">1</button>
+            <button class="calc-btn num" onclick="calcNum('2')">2</button>
+            <button class="calc-btn num" onclick="calcNum('3')">3</button>
+            <button class="calc-btn op" id="opAdd" onclick="calcOp('+')">+</button>
+
+            <button class="calc-btn num zero" onclick="calcNum('0')">0</button>
+            <button class="calc-btn num" onclick="calcDot()">.</button>
+            <button class="calc-btn eq" onclick="calcEqual()">=</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- CHESS -->
+    <div class="fade-in" style="transition-delay:0.15s">
+      <p style="font-size:12px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px">Chess vs AI</p>
+      <div class="chess-wrapper">
+        <div class="chess-info">
+          <span class="chess-status" id="chessStatus">Your turn (White)</span>
+          <div class="chess-btn-row">
+            <button class="chess-ctrl" onclick="initChess()">New Game</button>
+            <button class="chess-ctrl" onclick="undoChess()">Undo</button>
+          </div>
+        </div>
+        <div class="chess-board-wrap">
+          <div id="chessBoard"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <strong>Daffa Aditya Pratama</strong> &mdash; Backend Developer
+    <br><span style="font-size:11px">Designed and built from scratch</span>
+  </div>
+  <div class="footer-links">
+    <a href="https://wa.me/6285801135297">WhatsApp</a>
+    <a href="https://instagram.com/nvmd4p">Instagram</a>
+    <a href="https://github.com/">GitHub</a>
+  </div>
+</footer>
+
+<!-- MUSIC PLAYER -->
+<div class="music-player collapsed" id="musicPlayer">
+  <div class="music-header" onclick="togglePlayer()">
+    <img src="https://i.ibb.co/F495G4Yk/eleanor-1778524092266.jpg" alt="Cover" class="music-art" id="musicArt" onerror="this.style.background='var(--accent)'">
+    <div class="music-meta">
+      <div class="music-title">Cinnamon Girl - Lana Del Rey</div>
+      <div class="music-artist">Now Playing</div>
+    </div>
+    <button class="music-collapse-btn" aria-label="Toggle player">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+    </button>
+  </div>
+  <div class="music-progress-wrap">
+    <div class="music-progress-bar" onclick="seekAudio(event)">
+      <div class="music-progress-fill" id="progressFill"></div>
+    </div>
+    <div class="music-time">
+      <span id="timeCurrent">0:00</span>
+      <span id="timeDuration">0:00</span>
+    </div>
+  </div>
+  <div class="music-controls">
+    <button class="mc-btn" onclick="skipAudio(-10)" title="Rewind 10s">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8zm-1.1 11H10v-3.26L9 13.12V12l1.85-.66H11V16zm4.3-1.86c0 .51-.06.9-.18 1.17-.21.46-.62.69-1.23.69s-1.01-.23-1.22-.68c-.13-.28-.19-.67-.19-1.18v-.86c0-.51.06-.9.18-1.17.21-.46.62-.69 1.23-.69s1.01.23 1.22.68c.13.28.19.67.19 1.18v.86zm-.85-.96c0-.31-.02-.54-.07-.68-.09-.26-.28-.39-.49-.39s-.4.13-.49.39c-.05.14-.07.37-.07.68v1.06c0 .31.02.54.07.69.09.26.27.39.49.39s.4-.13.48-.39c.05-.14.07-.37.07-.69v-1.06z"/></svg>
+    </button>
+    <button class="mc-play" id="playBtn" onclick="toggleAudio()">
+      <svg id="playIcon" width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="mc-btn" onclick="skipAudio(10)" title="Forward 10s">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 13c0 3.31-2.69 6-6 6s-6-2.69-6-6 2.69-6 6-6v4l5-5-5-5v4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8h-2zm-6-2h.85l-1.85.66V12l1-1.26V16h-1v-5zm4.3.18v.86c0 .51.06.9.18 1.17.21.46.62.69 1.23.69s1.01-.23 1.22-.68c.13-.28.19-.67.19-1.18v-.86c0-.51-.06-.9-.18-1.17-.21-.46-.62-.69-1.23-.69s-1.01.23-1.22.68c-.13.28-.19.67-.19 1.18zm.85-.1v1.06c0 .31.02.54.07.68.09.26.28.39.49.39s.4-.13.48-.39c.05-.14.07-.37.07-.69v-1.06c0-.31-.02-.54-.07-.68-.09-.26-.27-.39-.49-.39s-.4.13-.49.39c-.04.14-.06.37-.06.69z"/></svg>
+    </button>
+  </div>
+  <div class="mc-vol">
+    <svg class="vol-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+    <input type="range" class="vol-slider" id="volSlider" min="0" max="1" step="0.05" value="0.8" oninput="setVolume(this.value)">
+    <svg class="vol-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+  </div>
+</div>
+
+<audio id="bgAudio" src="https://www.image2url.com/r2/default/audio/1778523935303-4cacd53b-199a-4331-bf37-45eeddef7aa4.mp3" preload="none"></audio>
+
+<script>
+// ===== THEME =====
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+// ===== FADE IN OBSERVER =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ===== LANGUAGES DATA =====
+const languages = [
+  { name: 'JavaScript', year: 1995, creator: 'Brendan Eich at Netscape', tag: 'Scripting', level: 95, desc: 'Core language for the web and Node.js. Powers all bot and backend systems built by Daffa.', color: '#f7df1e' },
+  { name: 'Python', year: 1991, creator: 'Guido van Rossum', tag: 'General Purpose', level: 80, desc: 'Versatile language for scripting, data processing, and rapid prototyping.', color: '#3776ab' },
+  { name: 'GDScript', year: 2014, creator: 'Juan Linietsky & Ariel Manzur (Godot)', tag: 'Game Dev', level: 75, desc: 'Python-like scripting language native to the Godot game engine for 2D/3D games.', color: '#478cbf' },
+  { name: 'Java', year: 1995, creator: 'James Gosling at Sun Microsystems', tag: 'OOP', level: 70, desc: 'Object-oriented language known for its "write once, run anywhere" philosophy.', color: '#ed8b00' },
+  { name: 'C', year: 1972, creator: 'Dennis Ritchie at Bell Labs', tag: 'Systems', level: 65, desc: 'Low-level systems programming language that forms the foundation of modern computing.', color: '#a8b9cc' },
+  { name: 'C++', year: 1985, creator: 'Bjarne Stroustrup at Bell Labs', tag: 'Systems', level: 62, desc: 'Extension of C with OOP features. Used in game engines, compilers, and high-performance apps.', color: '#00599c' },
+  { name: 'PHP', year: 1994, creator: 'Rasmus Lerdorf', tag: 'Web Backend', level: 72, desc: 'Server-side scripting language powering a large portion of the web, including WordPress.', color: '#777bb4' },
+  { name: 'TypeScript', year: 2012, creator: 'Anders Hejlsberg at Microsoft', tag: 'Typed JS', level: 78, desc: 'Strongly typed superset of JavaScript that compiles to plain JS.', color: '#3178c6' },
+  { name: 'Lua', year: 1993, creator: 'PUC-Rio University, Brazil', tag: 'Embedded', level: 68, desc: 'Lightweight scripting language often embedded in games and applications (Roblox, World of Warcraft).', color: '#2c2d72' },
+  { name: 'Rust', year: 2010, creator: 'Graydon Hoare at Mozilla Research', tag: 'Systems', level: 50, desc: 'Memory-safe systems language without a garbage collector. Known for performance and safety.', color: '#dea584' },
+  { name: 'Go', year: 2009, creator: 'Robert Griesemer, Rob Pike & Ken Thompson at Google', tag: 'Systems', level: 58, desc: 'Statically typed, compiled language designed for simplicity and high-performance concurrency.', color: '#00add8' },
+  { name: 'Kotlin', year: 2011, creator: 'JetBrains', tag: 'Android', level: 60, desc: 'Modern alternative to Java for Android development, fully interoperable with Java.', color: '#7f52ff' },
+  { name: 'Dart', year: 2011, creator: 'Lars Bak & Kasper Lund at Google', tag: 'Mobile', level: 55, desc: 'Client-optimized language for building fast apps on any platform. Powers Flutter.', color: '#0175c2' },
+  { name: 'Ruby', year: 1995, creator: 'Yukihiro Matsumoto (Matz)', tag: 'Web Dev', level: 50, desc: 'Elegant, developer-friendly language known for Ruby on Rails web framework.', color: '#cc342d' },
+  { name: 'Bash', year: 1989, creator: 'Brian Fox at GNU Project', tag: 'Shell', level: 73, desc: 'Unix shell scripting language for automation, system administration, and deployment pipelines.', color: '#4eaa25' },
+];
+
+function renderLangs() {
+  const grid = document.getElementById('langGrid');
+  grid.innerHTML = languages.map((l, i) => `
+    <div class="lang-card fade-in" style="transition-delay:${i * 0.04}s">
+      <div class="lang-tag">${l.tag}</div>
+      <div class="lang-header">
+        <span class="lang-name">${l.name}</span>
+        <span class="lang-year">est. ${l.year}</span>
+      </div>
+      <div class="lang-creator">Created by ${l.creator}</div>
+      <div class="lang-desc">${l.desc}</div>
+      <div class="lang-bar-bg">
+        <div class="lang-bar" style="width:0%;background:${l.color}" data-width="${l.level}%"></div>
+      </div>
+      <div class="lang-level">${l.level}% proficiency</div>
+    </div>
+  `).join('');
+  // Re-observe
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  // Animate bars on scroll
+  const barObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.lang-bar').forEach(bar => {
+          setTimeout(() => { bar.style.width = bar.dataset.width; }, 200);
+        });
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.lang-card').forEach(c => barObserver.observe(c));
+}
+renderLangs();
+
+// ===== CALCULATOR =====
+let calcState = { display: '0', expr: '', prev: null, op: null, justCalc: false };
+
+function updateCalcDisplay() {
+  const r = document.getElementById('calcResult');
+  const e = document.getElementById('calcExpr');
+  r.textContent = calcState.display;
+  e.textContent = calcState.expr;
+  const len = calcState.display.length;
+  r.style.fontSize = len > 9 ? '32px' : len > 6 ? '44px' : '64px';
+}
+
+function clearOpHighlight() {
+  ['opAdd','opSub','opMul','opDiv'].forEach(id => document.getElementById(id).classList.remove('active'));
+}
+
+function calcNum(n) {
+  clearOpHighlight();
+  if (calcState.justCalc) { calcState.display = n; calcState.expr = ''; calcState.justCalc = false; }
+  else if (calcState.display === '0') calcState.display = n;
+  else if (calcState.display.length < 12) calcState.display += n;
+  updateCalcDisplay();
+}
+function calcDot() {
+  clearOpHighlight();
+  if (calcState.justCalc) { calcState.display = '0.'; calcState.justCalc = false; }
+  else if (!calcState.display.includes('.')) calcState.display += '.';
+  updateCalcDisplay();
+}
+function calcAC() {
+  clearOpHighlight();
+  calcState = { display: '0', expr: '', prev: null, op: null, justCalc: false };
+  updateCalcDisplay();
+}
+function calcToggleSign() {
+  if (calcState.display !== '0') calcState.display = (parseFloat(calcState.display) * -1).toString();
+  updateCalcDisplay();
+}
+function calcPercent() {
+  calcState.display = (parseFloat(calcState.display) / 100).toString();
+  updateCalcDisplay();
+}
+function calcOp(op) {
+  clearOpHighlight();
+  const ids = {'+':'opAdd','-':'opSub','*':'opMul','/':'opDiv'};
+  if (ids[op]) document.getElementById(ids[op]).classList.add('active');
+  const val = parseFloat(calcState.display);
+  if (calcState.op && !calcState.justCalc) {
+    const res = doCalc(calcState.prev, val, calcState.op);
+    calcState.expr = formatNum(res) + ' ' + opSymbol(op);
+    calcState.display = formatNum(res);
+    calcState.prev = res;
+  } else {
+    calcState.prev = val;
+    calcState.expr = formatNum(val) + ' ' + opSymbol(op);
+  }
+  calcState.op = op;
+  calcState.justCalc = true;
+  updateCalcDisplay();
+}
+function calcEqual() {
+  clearOpHighlight();
+  if (calcState.op === null) return;
+  const val = parseFloat(calcState.display);
+  const res = doCalc(calcState.prev, val, calcState.op);
+  calcState.expr = formatNum(calcState.prev) + ' ' + opSymbol(calcState.op) + ' ' + formatNum(val) + ' =';
+  calcState.display = formatNum(res);
+  calcState.prev = null; calcState.op = null; calcState.justCalc = true;
+  updateCalcDisplay();
+}
+function doCalc(a, b, op) {
+  switch(op) {
+    case '+': return a + b;
+    case '-': return a - b;
+    case '*': return a * b;
+    case '/': return b === 0 ? 'Error' : a / b;
+  }
+}
+function opSymbol(op) { return {'+':'+','-':'−','*':'×','/':'÷'}[op] || op; }
+function formatNum(n) {
+  if (n === 'Error') return 'Error';
+  if (Number.isInteger(n) || Math.abs(n) > 1e10) return parseFloat(n.toPrecision(10)).toString();
+  const s = parseFloat(n.toPrecision(10)).toString();
+  return s.length > 12 ? parseFloat(n.toFixed(6)).toString() : s;
+}
+
+// ===== CHESS ENGINE =====
+// Piece constants
+const EMPTY=0, WP=1, WN=2, WB=3, WR=4, WQ=5, WK=6, BP=7, BN=8, BB=9, BR=10, BQ=11, BK=12;
+const PIECE_UNICODE = {
+  [WP]: '♟', [WN]: '♞', [WB]: '♝', [WR]: '♜', [WQ]: '♛', [WK]: '♚',
+  [BP]: '♙', [BN]: '♘', [BB]: '♗', [BR]: '♖', [BQ]: '♕', [BK]: '♔'
+};
+const isWhite = p => p >= 1 && p <= 6;
+const isBlack = p => p >= 7 && p <= 12;
+const isEmpty = p => p === 0;
+
+let chess = {};
+let moveHistory = [];
+
+function initChess() {
+  chess = {
+    board: [
+      [BR,BN,BB,BQ,BK,BB,BN,BR],
+      [BP,BP,BP,BP,BP,BP,BP,BP],
+      [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
+      [WP,WP,WP,WP,WP,WP,WP,WP],
+      [WR,WN,WB,WQ,WK,WB,WN,WR]
+    ],
+    turn: 'white', selected: null, validMoves: [],
+    castling: { wK: true, wQ: true, bK: true, bQ: true },
+    enPassant: null, lastMove: null, gameOver: false
+  };
+  moveHistory = [];
+  renderChess();
+  setStatus('Your turn (White)');
+}
+
+function renderChess() {
+  const board = document.getElementById('chessBoard');
+  board.innerHTML = '';
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const sq = document.createElement('div');
+      sq.className = 'chess-sq ' + ((r + c) % 2 === 0 ? 'light' : 'dark');
+      const piece = chess.board[r][c];
+      if (piece) {
+        sq.innerHTML = `<span>${PIECE_UNICODE[piece]}</span>`;
+      }
+      // Labels
+      if (c === 7) { const lbl = document.createElement('span'); lbl.className = 'sq-label rank'; lbl.textContent = 8 - r; sq.appendChild(lbl); }
+      if (r === 7) { const lbl = document.createElement('span'); lbl.className = 'sq-label file'; lbl.textContent = 'abcdefgh'[c]; sq.appendChild(lbl); }
+      // Highlights
+      if (chess.selected && chess.selected[0] === r && chess.selected[1] === c) sq.classList.add('selected');
+      if (chess.validMoves.some(m => m[0] === r && m[1] === c)) {
+        sq.classList.add(chess.board[r][c] ? 'valid-capture' : 'valid-move');
+      }
+      if (chess.lastMove && ((chess.lastMove.fr === r && chess.lastMove.fc === c) || (chess.lastMove.tr === r && chess.lastMove.tc === c))) sq.classList.add('last-move');
+      sq.addEventListener('click', () => sqClick(r, c));
+      board.appendChild(sq);
+    }
+  }
+}
+
+function sqClick(r, c) {
+  if (chess.gameOver || chess.turn !== 'white') return;
+  const piece = chess.board[r][c];
+  if (chess.selected) {
+    const moveMatch = chess.validMoves.find(m => m[0] === r && m[1] === c);
+    if (moveMatch) {
+      doMove(chess.selected[0], chess.selected[1], r, c);
+      chess.selected = null; chess.validMoves = [];
+      renderChess();
+      if (!chess.gameOver) {
+        chess.turn = 'black';
+        setStatus('AI is thinking...');
+        setTimeout(aiMove, 400);
+      }
+      return;
+    }
+    chess.selected = null; chess.validMoves = [];
+  }
+  if (!isEmpty(piece) && isWhite(piece)) {
+    chess.selected = [r, c];
+    chess.validMoves = getLegalMoves(r, c, chess.board, chess.turn, chess.castling, chess.enPassant);
+  }
+  renderChess();
+}
+
+function doMove(fr, fc, tr, tc, board = chess.board, castling = chess.castling, enPassant = null, isSimulation = false) {
+  const piece = board[fr][fc];
+  const prevEP = enPassant;
+  let newEP = null;
+  // En passant capture
+  if (piece === WP && fr === 3 && tc === prevEP) { board[fr][tc] = 0; }
+  if (piece === BP && fr === 4 && tc === prevEP) { board[fr][tc] = 0; }
+  // Pawn double push
+  if (piece === WP && fr === 6 && tr === 4) newEP = tc;
+  if (piece === BP && fr === 1 && tr === 3) newEP = tc;
+  // Castling
+  if (piece === WK && fc === 4) {
+    if (tc === 6) { board[7][5] = WR; board[7][7] = 0; }
+    if (tc === 2) { board[7][3] = WR; board[7][0] = 0; }
+    castling.wK = false; castling.wQ = false;
+  }
+  if (piece === BK && fc === 4) {
+    if (tc === 6) { board[0][5] = BR; board[0][7] = 0; }
+    if (tc === 2) { board[0][3] = BR; board[0][0] = 0; }
+    castling.bK = false; castling.bQ = false;
+  }
+  if (piece === WR) { if (fc === 0) castling.wQ = false; if (fc === 7) castling.wK = false; }
+  if (piece === BR) { if (fc === 0) castling.bQ = false; if (fc === 7) castling.bK = false; }
+  board[tr][tc] = piece;
+  board[fr][fc] = 0;
+  // Promotion
+  if (piece === WP && tr === 0) board[tr][tc] = WQ;
+  if (piece === BP && tr === 7) board[tr][tc] = BQ;
+  if (!isSimulation) {
+    chess.enPassant = newEP;
+    chess.lastMove = { fr, fc, tr, tc };
+    moveHistory.push({ fr, fc, tr, tc, piece, captured: board[tr][tc] });
+  }
+  return newEP;
+}
+
+function getLegalMoves(r, c, board, turn, castling, ep) {
+  const pseudo = getPseudoMoves(r, c, board, turn, castling, ep);
+  return pseudo.filter(([tr, tc]) => {
+    const bCopy = board.map(row => [...row]);
+    const castCopy = { ...castling };
+    doMove(r, c, tr, tc, bCopy, castCopy, ep, true);
+    return !isInCheck(bCopy, turn);
+  });
+}
+
+function getPseudoMoves(r, c, board, turn, castling, ep) {
+  const piece = board[r][c];
+  const moves = [];
+  const add = (tr, tc) => { if (tr >= 0 && tr < 8 && tc >= 0 && tc < 8) moves.push([tr, tc]); };
+  const slideAdd = (dr, dc) => {
+    let nr = r + dr, nc = c + dc;
+    while (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
+      if (!isEmpty(board[nr][nc])) { if ((turn === 'white' && isBlack(board[nr][nc])) || (turn === 'black' && isWhite(board[nr][nc]))) moves.push([nr, nc]); break; }
+      moves.push([nr, nc]); nr += dr; nc += dc;
+    }
+  };
+  const canLand = (tr, tc) => tr >= 0 && tr < 8 && tc >= 0 && tc < 8 && ((turn === 'white' && !isWhite(board[tr][tc])) || (turn === 'black' && !isBlack(board[tr][tc])));
+  if (piece === WP) {
+    if (r > 0 && isEmpty(board[r-1][c])) { moves.push([r-1,c]); if (r === 6 && isEmpty(board[r-2][c])) moves.push([r-2,c]); }
+    if (r > 0 && c > 0 && (isBlack(board[r-1][c-1]) || (ep !== null && ep === c-1 && r === 3))) moves.push([r-1,c-1]);
+    if (r > 0 && c < 7 && (isBlack(board[r-1][c+1]) || (ep !== null && ep === c+1 && r === 3))) moves.push([r-1,c+1]);
+  } else if (piece === BP) {
+    if (r < 7 && isEmpty(board[r+1][c])) { moves.push([r+1,c]); if (r === 1 && isEmpty(board[r+2][c])) moves.push([r+2,c]); }
+    if (r < 7 && c > 0 && (isWhite(board[r+1][c-1]) || (ep !== null && ep === c-1 && r === 4))) moves.push([r+1,c-1]);
+    if (r < 7 && c < 7 && (isWhite(board[r+1][c+1]) || (ep !== null && ep === c+1 && r === 4))) moves.push([r+1,c+1]);
+  } else if (piece === WN || piece === BN) {
+    [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(([dr,dc]) => { if (canLand(r+dr,c+dc)) add(r+dr,c+dc); });
+  } else if (piece === WB || piece === BB) {
+    [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([dr,dc]) => slideAdd(dr,dc));
+  } else if (piece === WR || piece === BR) {
+    [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dr,dc]) => slideAdd(dr,dc));
+  } else if (piece === WQ || piece === BQ) {
+    [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]].forEach(([dr,dc]) => slideAdd(dr,dc));
+  } else if (piece === WK) {
+    [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]].forEach(([dr,dc]) => { if (canLand(r+dr,c+dc)) add(r+dr,c+dc); });
+    if (castling.wK && isEmpty(board[7][5]) && isEmpty(board[7][6]) && !isInCheck(board,'white')) moves.push([7,6]);
+    if (castling.wQ && isEmpty(board[7][3]) && isEmpty(board[7][2]) && isEmpty(board[7][1]) && !isInCheck(board,'white')) moves.push([7,2]);
+  } else if (piece === BK) {
+    [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]].forEach(([dr,dc]) => { if (canLand(r+dr,c+dc)) add(r+dr,c+dc); });
+    if (castling.bK && isEmpty(board[0][5]) && isEmpty(board[0][6])) moves.push([0,6]);
+    if (castling.bQ && isEmpty(board[0][3]) && isEmpty(board[0][2]) && isEmpty(board[0][1])) moves.push([0,2]);
+  }
+  return moves;
+}
+
+function isInCheck(board, turn) {
+  let kingR = -1, kingC = -1;
+  const king = turn === 'white' ? WK : BK;
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (board[r][c] === king) { kingR = r; kingC = c; }
+  const opp = turn === 'white' ? 'black' : 'white';
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const p = board[r][c];
+    if ((opp === 'white' && isWhite(p)) || (opp === 'black' && isBlack(p))) {
+      const moves = getPseudoMoves(r, c, board, opp, { wK:false,wQ:false,bK:false,bQ:false }, null);
+      if (moves.some(([mr,mc]) => mr === kingR && mc === kingC)) return true;
+    }
+  }
+  return false;
+}
+
+function getAllLegalMoves(board, turn, castling, ep) {
+  const all = [];
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const p = board[r][c];
+    if ((turn === 'white' && isWhite(p)) || (turn === 'black' && isBlack(p))) {
+      getLegalMoves(r, c, board, turn, castling, ep).forEach(([tr,tc]) => all.push({ fr: r, fc: c, tr, tc }));
+    }
+  }
+  return all;
+}
+
+// Simple piece values for AI
+const PIECE_VAL = { [WP]:100,[WN]:320,[WB]:330,[WR]:500,[WQ]:900,[WK]:20000, [BP]:100,[BN]:320,[BB]:330,[BR]:500,[BQ]:900,[BK]:20000 };
+const PST_PAWN = [[0,0,0,0,0,0,0,0],[50,50,50,50,50,50,50,50],[10,10,20,30,30,20,10,10],[5,5,10,25,25,10,5,5],[0,0,0,20,20,0,0,0],[5,-5,-10,0,0,-10,-5,5],[5,10,10,-20,-20,10,10,5],[0,0,0,0,0,0,0,0]];
+const PST_KNIGHT = [[-50,-40,-30,-30,-30,-30,-40,-50],[-40,-20,0,0,0,0,-20,-40],[-30,0,10,15,15,10,0,-30],[-30,5,15,20,20,15,5,-30],[-30,0,15,20,20,15,0,-30],[-30,5,10,15,15,10,5,-30],[-40,-20,0,5,5,0,-20,-40],[-50,-40,-30,-30,-30,-30,-40,-50]];
+
+function evalBoard(board) {
+  let score = 0;
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const p = board[r][c];
+    if (!p) continue;
+    const val = PIECE_VAL[p] || 0;
+    let pos = 0;
+    if (p === WP) pos = PST_PAWN[r][c];
+    if (p === BP) pos = PST_PAWN[7-r][c];
+    if (p === WN) pos = PST_KNIGHT[r][c];
+    if (p === BN) pos = PST_KNIGHT[7-r][c];
+    score += isBlack(p) ? -(val + pos) : (val + pos);
+  }
+  return score;
+}
+
+function minimax(board, depth, alpha, beta, maximizing, castling, ep) {
+  const turn = maximizing ? 'white' : 'black';
+  const moves = getAllLegalMoves(board, turn, castling, ep);
+  if (depth === 0 || moves.length === 0) return evalBoard(board);
+  if (maximizing) {
+    let best = -Infinity;
+    for (const m of moves) {
+      const bCopy = board.map(row => [...row]);
+      const castCopy = { ...castling };
+      const newEP = doMove(m.fr, m.fc, m.tr, m.tc, bCopy, castCopy, ep, true);
+      best = Math.max(best, minimax(bCopy, depth-1, alpha, beta, false, castCopy, newEP));
+      alpha = Math.max(alpha, best);
+      if (beta <= alpha) break;
+    }
+    return best;
+  } else {
+    let best = Infinity;
+    for (const m of moves) {
+      const bCopy = board.map(row => [...row]);
+      const castCopy = { ...castling };
+      const newEP = doMove(m.fr, m.fc, m.tr, m.tc, bCopy, castCopy, ep, true);
+      best = Math.min(best, minimax(bCopy, depth-1, alpha, beta, true, castCopy, newEP));
+      beta = Math.min(beta, best);
+      if (beta <= alpha) break;
+    }
+    return best;
+  }
+}
+
+function aiMove() {
+  const moves = getAllLegalMoves(chess.board, 'black', chess.castling, chess.enPassant);
+  if (moves.length === 0) {
+    if (isInCheck(chess.board, 'black')) { setStatus('Checkmate! You Win!'); chess.gameOver = true; }
+    else { setStatus('Stalemate - Draw!'); chess.gameOver = true; }
+    renderChess(); return;
+  }
+  let bestScore = Infinity, bestMove = moves[0];
+  for (const m of moves) {
+    const bCopy = chess.board.map(row => [...row]);
+    const castCopy = { ...chess.castling };
+    const newEP = doMove(m.fr, m.fc, m.tr, m.tc, bCopy, castCopy, chess.enPassant, true);
+    const score = minimax(bCopy, 2, -Infinity, Infinity, true, castCopy, newEP);
+    if (score < bestScore) { bestScore = score; bestMove = m; }
+  }
+  doMove(bestMove.fr, bestMove.fc, bestMove.tr, bestMove.tc);
+  chess.turn = 'white';
+  renderChess();
+  const wMoves = getAllLegalMoves(chess.board, 'white', chess.castling, chess.enPassant);
+  if (wMoves.length === 0) {
+    if (isInCheck(chess.board, 'white')) { setStatus('Checkmate! AI Wins!'); chess.gameOver = true; }
+    else { setStatus('Stalemate - Draw!'); chess.gameOver = true; }
+  } else if (isInCheck(chess.board, 'white')) setStatus('Check! Your turn (White)');
+  else setStatus('Your turn (White)');
+}
+
+function undoChess() {
+  if (moveHistory.length < 2) { initChess(); return; }
+  // Undo two moves
+  for (let i = 0; i < 2; i++) {
+    const m = moveHistory.pop();
+    if (!m) break;
+    chess.board[m.fr][m.fc] = m.piece;
+    chess.board[m.tr][m.tc] = m.captured || 0;
+  }
+  chess.turn = 'white'; chess.gameOver = false;
+  chess.lastMove = moveHistory.length ? moveHistory[moveHistory.length - 1] : null;
+  chess.selected = null; chess.validMoves = [];
+  renderChess(); setStatus('Your turn (White)');
+}
+
+function setStatus(s) { document.getElementById('chessStatus').textContent = s; }
+
+initChess();
+
+// ===== MUSIC PLAYER =====
+const audio = document.getElementById('bgAudio');
+const art = document.getElementById('musicArt');
+let isPlaying = false;
+
+audio.volume = 0.8;
+audio.addEventListener('timeupdate', () => {
+  if (!audio.duration) return;
+  const pct = (audio.currentTime / audio.duration) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('timeCurrent').textContent = formatTime(audio.currentTime);
+  document.getElementById('timeDuration').textContent = formatTime(audio.duration);
+});
+audio.addEventListener('ended', () => {
+  isPlaying = false; updatePlayIcon();
+  art.classList.remove('spinning');
+  document.getElementById('progressFill').style.width = '0%';
+});
+
+function togglePlayer() {
+  document.getElementById('musicPlayer').classList.toggle('collapsed');
+}
+function toggleAudio() {
+  if (isPlaying) { audio.pause(); isPlaying = false; art.classList.remove('spinning'); }
+  else { audio.play(); isPlaying = true; art.classList.add('spinning'); }
+  updatePlayIcon();
+}
+function updatePlayIcon() {
+  document.getElementById('playIcon').innerHTML = isPlaying
+    ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="white"/>'
+    : '<path d="M8 5v14l11-7z" fill="white"/>';
+}
+function skipAudio(sec) { audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + sec)); }
+function seekAudio(e) {
+  const bar = e.currentTarget;
+  const pct = e.offsetX / bar.offsetWidth;
+  audio.currentTime = pct * (audio.duration || 0);
+}
+function setVolume(v) { audio.volume = v; }
+function formatTime(s) { if (!s || isNaN(s)) return '0:00'; const m = Math.floor(s/60); const sec = Math.floor(s%60); return m + ':' + (sec < 10 ? '0' : '') + sec; }
+</script>
+</body>
+</html>
